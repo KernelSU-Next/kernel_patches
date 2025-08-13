@@ -1090,6 +1090,19 @@ index 0d0a67fd..e54ac1e9 100644
  
  	return 0;
  }
+diff --git a/kernel/kernel_compat.c b/kernel/kernel_compat.c
+index db47f8eb..50824be1 100644
+--- a/kernel/kernel_compat.c
++++ b/kernel/kernel_compat.c
+@@ -174,7 +174,7 @@ long ksu_strncpy_from_user_nofault(char *dst, const void __user *unsafe_addr,
+ }
+ #endif
+ 
+-static inline int ksu_access_ok(const void *addr, unsigned long size)
++inline int ksu_access_ok(const void *addr, unsigned long size)
+ {
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,0,0)
+ 	return access_ok(addr, size);
 diff --git a/kernel/kernel_compat.h b/kernel/kernel_compat.h
 index c85e9e2c..cad307a0 100644
 --- a/kernel/kernel_compat.h
