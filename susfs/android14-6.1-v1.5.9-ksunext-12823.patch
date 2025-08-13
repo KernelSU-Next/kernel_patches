@@ -303,7 +303,7 @@ index bed501c4..e02aa514 100644
  
  #endif
 diff --git a/kernel/core_hook.c b/kernel/core_hook.c
-index 0d0a67fd..0d604c1f 100644
+index 0d0a67fd..e54ac1e9 100644
 --- a/kernel/core_hook.c
 +++ b/kernel/core_hook.c
 @@ -35,6 +35,10 @@
@@ -941,7 +941,7 @@ index 0d0a67fd..0d604c1f 100644
 +	ksu_try_umount("/sbin", false, MNT_DETACH, uid);
 +
 +	// try umount hosts file
-+	ksu_try_umount("/system/etc/hosts", false, MNT_DETACH);
++	ksu_try_umount("/system/etc/hosts", false, MNT_DETACH, uid);
 +
 +	// try umount lsposed dex2oat bins
 +	ksu_try_umount("/apex/com.android.art/bin/dex2oat64", false, MNT_DETACH, uid);
@@ -1090,27 +1090,6 @@ index 0d0a67fd..0d604c1f 100644
  
  	return 0;
  }
-diff --git a/kernel/kernel_compat.c b/kernel/kernel_compat.c
-index db47f8eb..873da944 100644
---- a/kernel/kernel_compat.c
-+++ b/kernel/kernel_compat.c
-@@ -76,6 +76,16 @@ void ksu_android_ns_fs_check()
- 	task_unlock(current);
- }
- 
-+int ksu_access_ok(const void *addr, unsigned long size) {
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,0,0)
-+    /* For kernels before 5.0.0, pass the type argument to access_ok. */
-+    return access_ok(VERIFY_READ, addr, size);
-+#else
-+    /* For kernels 5.0.0 and later, ignore the type argument. */
-+    return access_ok(addr, size);
-+#endif
-+}
-+
- struct file *ksu_filp_open_compat(const char *filename, int flags, umode_t mode)
- {
- #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0) || defined(CONFIG_IS_HW_HISI) || defined(CONFIG_KSU_ALLOWLIST_WORKAROUND)
 diff --git a/kernel/kernel_compat.h b/kernel/kernel_compat.h
 index c85e9e2c..cad307a0 100644
 --- a/kernel/kernel_compat.h
