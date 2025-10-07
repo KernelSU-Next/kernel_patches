@@ -950,7 +950,7 @@ index 2ffc72aa..7f58fcd5 100644
  // Init functons
  
 diff --git a/kernel/kernel_compat.c b/kernel/kernel_compat.c
-index db47f8eb..873da944 100644
+index db47f8eb..267d150c 100644
 --- a/kernel/kernel_compat.c
 +++ b/kernel/kernel_compat.c
 @@ -76,6 +76,16 @@ void ksu_android_ns_fs_check()
@@ -970,6 +970,22 @@ index db47f8eb..873da944 100644
  struct file *ksu_filp_open_compat(const char *filename, int flags, umode_t mode)
  {
  #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0) || defined(CONFIG_IS_HW_HISI) || defined(CONFIG_KSU_ALLOWLIST_WORKAROUND)
+@@ -174,15 +184,6 @@ long ksu_strncpy_from_user_nofault(char *dst, const void __user *unsafe_addr,
+ }
+ #endif
+ 
+-static inline int ksu_access_ok(const void *addr, unsigned long size)
+-{
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,0,0)
+-	return access_ok(addr, size);
+-#else
+-	return access_ok(VERIFY_READ, addr, size);
+-#endif
+-}
+-
+ long ksu_strncpy_from_user_retry(char *dst, const void __user *unsafe_addr,
+ 				   long count)
+ {
 diff --git a/kernel/kernel_compat.h b/kernel/kernel_compat.h
 index 421c384c..e7f8dfed 100644
 --- a/kernel/kernel_compat.h
